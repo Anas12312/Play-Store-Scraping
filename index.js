@@ -10,6 +10,7 @@ async function run(searchQuery) {
         waitUntil: "domcontentloaded"
     })
 
+    await page.waitForSelector('#kO001e > header > nav > div > div:nth-child(1) > button')
     await page.click('#kO001e > header > nav > div > div:nth-child(1) > button', {
         delay: 20
     })
@@ -19,128 +20,74 @@ async function run(searchQuery) {
     await page.keyboard.press("Enter")
 
     await page.waitForSelector('#yDmH0d > c-wiz:nth-child(7) > div > div > c-wiz > c-wiz > c-wiz > section > div > div > div > div > div > div.VfPpkd-aGsRMb > div > a')
-    const links = await page.$$('#yDmH0d > c-wiz:nth-child(7) > div > div > c-wiz > c-wiz > c-wiz > section > div > div > div > div > div > div.VfPpkd-aGsRMb > div > a')
+    const links = await page.$$eval('#yDmH0d > c-wiz:nth-child(7) > div > div > c-wiz > c-wiz > c-wiz > section > div > div > div > div > div > div.VfPpkd-aGsRMb > div > a', allAnchors => allAnchors.map(anchor => anchor.href));
 
-    const URLs = []
-
-    for (let link of links) {
-        const url = await link.evaluate(l => l.getAttribute('href'))
-        URLs.push('https://play.google.com' + url)
-    }
-    const appData = []
     async function extract(url) {
         await page.goto(url, {
             waitUntil: "domcontentloaded"
         })
 
         try {
-            await page.waitForSelector('h1', {
-                timeout: 500
-            })
+            // Wait for the title element to appear and extract the app's title
+            await page.waitForSelector('h1', { timeout: 2000 })
             const titleElement = await page.$('h1')
             const title = await titleElement.evaluate(t => t.textContent)
 
-            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.qxNhq > div > div > div > div.Vbfug.auoIOc > a > span', {
-                timeout: 500
-            })
+            // Extract the company's name
+            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.qxNhq > div > div > div > div.Vbfug.auoIOc > a > span', { timeout: 2000 })
             const companyElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.qxNhq > div > div > div > div.Vbfug.auoIOc > a > span')
             const company = await companyElement.evaluate(c => c.textContent)
 
-            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.qxNhq > div > div > div > div.ulKokd > div', {
-                timeout: 500
-            })
+            // Check if the app contains ads
+            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.qxNhq > div > div > div > div.ulKokd > div', { timeout: 2000 })
             const adsElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.qxNhq > div > div > div > div.ulKokd > div')
             const ads = await adsElement.evaluate(a => a.textContent)
 
-            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.JU1wdd > div > div > div:nth-child(1) > div.ClM7O', {
-                timeout: 500
-            })
+            // Extract the app's rating
+            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.JU1wdd > div > div > div:nth-child(1) > div.ClM7O', { timeout: 2000 })
             const ratingElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.JU1wdd > div > div > div:nth-child(1) > div.ClM7O')
             const rating = await ratingElement.evaluate(r => r.textContent)
 
-            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.JU1wdd > div > div > div:nth-child(1) > div.g1rdde', {
-                timeout: 500
-            })
+            // Extract the number of reviews
+            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.JU1wdd > div > div > div:nth-child(1) > div.g1rdde', { timeout: 2000 })
             const reviewElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.JU1wdd > div > div > div:nth-child(1) > div.g1rdde')
             const review = await reviewElement.evaluate(r => r.textContent)
 
-            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.JU1wdd > div > div > div:nth-child(2) > div.ClM7O', {
-                timeout: 500
-            })
+            // Extract the number of downloads
+            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.JU1wdd > div > div > div:nth-child(2) > div.ClM7O', { timeout: 2000 })
             const downloadsElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div.P9KVBf > div > div > c-wiz > div.hnnXjf.XcNflb.J1Igtd > div.JU1wdd > div > div > div:nth-child(2) > div.ClM7O')
             const downloads = await downloadsElement.evaluate(d => d.textContent)
-            appData.push({
+
+            return {
                 title,
                 company,
                 ads,
                 rating,
                 review,
                 downloads
-            })
-        } catch (e) {
-            await page.waitForSelector('h1', {
-                timeout: 500
-            })
-            const titleElement = await page.$('h1')
-            const title = await titleElement.evaluate(t => t.textContent)
-
-            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.Il7kR > div > div > div > div.Vbfug.auoIOc > a > span', {
-                timeout: 500
-            })
-            const companyElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.Il7kR > div > div > div > div.Vbfug.auoIOc > a > span')
-            const company = await companyElement.evaluate(c => c.textContent)
-            let ads
-            try {
-                await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.Il7kR > div > div > div > div.ulKokd > div > span', {
-                    timeout: 500
-                })
-                const adsElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.Il7kR > div > div > div > div.ulKokd > div > span')
-                ads = await adsElement.evaluate(a => a.textContent)
-            }catch (e) {
-
             }
-
-            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.JU1wdd > div > div > div:nth-child(1) > div.ClM7O > div > div', {
-                timeout: 500
-            })
-            const ratingElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.JU1wdd > div > div > div:nth-child(1) > div.ClM7O > div > div')
-            const rating = await ratingElement.evaluate(r => r.textContent)
-
-            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.JU1wdd > div > div > div:nth-child(1) > div.g1rdde', {
-                timeout: 500
-            })
-            const reviewElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.JU1wdd > div > div > div:nth-child(1) > div.g1rdde')
-            const review = await reviewElement.evaluate(r => r.textContent)
-
-            await page.waitForSelector('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.JU1wdd > div > div > div:nth-child(2) > div.ClM7O', {
-                timeout: 500
-            })
-            const downloadsElement = await page.$('#yDmH0d > c-wiz.SSPGKf.Czez9d > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > c-wiz > div.hnnXjf > div.JU1wdd > div > div > div:nth-child(2) > div.ClM7O')
-            const downloads = await downloadsElement.evaluate(d => d.textContent)
-            appData.push({
-                title,
-                company,
-                ads,
-                rating,
-                review,
-                downloads
-            })
-        }
-
-        
-    }
-    for (let url of URLs) {
-        try {
-            await extract(url)
         } catch (e) {
-            console.error(e)
-            await extract(url)
+            console.error(e.message)
+        }
+
+
+    }
+
+    const appData = []
+    for (let link of links) {
+        try {
+            const data = await extract(link)
+            appData.push(data)
+        } catch (e) {
+            console.error(e.message)
+            await extract(link)
         }
 
     }
+    
     await browser.close()
     console.log(appData)
-    
+
 }
 
-run("Notes app")
+run("Fun Games")
