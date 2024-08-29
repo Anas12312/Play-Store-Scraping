@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer')
+const fs = require('fs')
 
 async function run(searchQuery) {
     const browser = await puppeteer.launch({
@@ -87,6 +88,8 @@ async function run(searchQuery) {
     
     await browser.close()
     console.log(appData)
+    const stringifiedData = JSON.stringify(appData)
+    fs.writeFileSync('data.json', stringifiedData)
 
 }
 
